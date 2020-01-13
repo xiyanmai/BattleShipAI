@@ -8,3 +8,5 @@ class Ship(object):
     def __str__(self) -> str:
         return self.name
 
+    def __lt__(self, other:"Ship"):
+        return self.name < other.name

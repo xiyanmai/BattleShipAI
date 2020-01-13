@@ -1,4 +1,4 @@
-from typing import Dict, Tuple, Container
+from typing import Dict, Tuple, List
 
 from . import game, game_config, board, ship, orientation, ship_placement, move
 import BattleShip.src.ship
@@ -7,15 +7,20 @@ import BattleShip.src.ship
 class Player(object):
     ships: Dict[str, ship.Ship]
 
-    def __init__(self, config: game_config.GameConfig, other_players: Container["Player"]) -> None:
+    def __init__(self, config: game_config.GameConfig, other_players: List["Player"]) -> None:
         super().__init__()
         self.name = 'No Name'
         self.init_name(other_players)
         self.board = board.Board(config)
+        self.opponents = other_players[:] # a copy of other players
         self.ships = dict(config.available_ships)
         self.place_ships()
 
-    def init_name(self, other_players: Container["Player"]) -> None:
+        # make this player the opponent of all the other players
+        for opponent in other_players:
+            opponent.add_opponent(self)
+
+    def init_name(self, other_players: List["Player"]) -> None:
         while True:
             self.name = input('Please enter your name: ').strip()
             if self in other_players:
@@ -23,6 +28,9 @@ class Player(object):
                       f'Please choose another name.')
             else:
                 break
+
+    def add_opponent(self, opponent: "Player")->None:
+        self.opponents.append(opponent)
 
     def place_ships(self) -> None:
         for ship_ in self.ships.values():
@@ -55,7 +63,7 @@ class Player(object):
     def get_start_coords(self, ship_: ship.Ship):
 
         coords = input(f'{self.name}, enter the starting position for your {ship_.name} ship '
-                       f'in the for row, column: ')
+                       f',which is {ship_.length} long, in the for row, column: ')
         try:
             row, col = coords.split(',')
         except ValueError:
@@ -81,6 +89,7 @@ class Player(object):
     def get_move(self):
         coords = input('Enter the location you want to fire at in the form row,col: ')
 
+
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Player):
             return False
@@ -89,5 +98,19 @@ class Player(object):
 
     def __ne__(self, other: object) -> bool:
         return self != other
+
+    def display_scanning_boards(self):
+        print(f"{self.name}'s Scanning Board")
+        for opponent in self.opponents:
+            print(opponent.get_hidden_representation_of_board())
+
+        print(f"\n{self.name}'s Firing Board")
+        print(self.get_visible_representation_of_board())
+
+    def display_firing_board(self):
+        pass
+
+    def get_hidden_representation_of_board(self):
+        pass
 
 

@@ -2,7 +2,7 @@ import unittest
 from BattleShip.src.orientation import Orientation
 
 
-class MyTestCase(unittest.TestCase):
+class TestOrientation(unittest.TestCase):
     def test_create_horizontal(self):
         prefixes = ['horizontal', 'h', 'hor']
         for prefix in prefixes:

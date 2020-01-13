@@ -8,6 +8,7 @@ class Game(object):
         self.game_config = game_config.GameConfig(game_config_file)
         self.players = []
         self.player_turn = 0
+        self.setup_players(num_players)
 
     def setup_players(self, num_players: int) -> None:
         for player_num in range(num_players):
@@ -30,5 +31,7 @@ class Game(object):
     def game_is_over(self) -> bool:
         return any(player_.all_ships_sunk() for player_ in self.players)
 
-    def display_gamestate(self)->None:
-        pass
+    def display_gamestate(self) -> None:
+        cur_player = self.get_active_player()
+        cur_player.display_scanning_boards()
+        cur_player.display_firing_board()
