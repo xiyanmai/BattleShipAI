@@ -1,10 +1,11 @@
-from typing import Dict, Tuple, List
+from typing import Dict, List
 
-from . import game, game_config, board, ship, orientation, ship_placement, move
-import BattleShip.src.ship
+from . import game_config, board, ship, orientation, ship_placement, move
+from .firing_location_error import FiringLocationError
 
 
 class Player(object):
+    opponents: List["Player"]
     ships: Dict[str, ship.Ship]
 
     def __init__(self, config: game_config.GameConfig, other_players: List["Player"]) -> None:
@@ -12,7 +13,7 @@ class Player(object):
         self.name = 'No Name'
         self.init_name(other_players)
         self.board = board.Board(config)
-        self.opponents = other_players[:] # a copy of other players
+        self.opponents = other_players[:]  # a copy of other players
         self.ships = dict(config.available_ships)
         self.place_ships()
 
@@ -29,11 +30,12 @@ class Player(object):
             else:
                 break
 
-    def add_opponent(self, opponent: "Player")->None:
+    def add_opponent(self, opponent: "Player") -> None:
         self.opponents.append(opponent)
 
     def place_ships(self) -> None:
         for ship_ in self.ships.values():
+            self.display_placement_board()
             self.place_ship(ship_)
 
     def place_ship(self, ship_: ship.Ship) -> None:
@@ -57,13 +59,15 @@ class Player(object):
                 return ship_placement.ShipPlacement(ship_, orientation_, start_row, start_col)
 
     def get_orientation(self, ship_: ship.Ship) -> orientation.Orientation:
-        orientation_ = input(f'{self.name} enter horizontal or vertical for the orientation of {ship_.name}.')
+        orientation_ = input(
+            f'{self.name} enter horizontal or vertical for the orientation of {ship_.name} '
+            f'which is {ship_.length} long: ')
         return orientation.Orientation.from_string(orientation_)
 
     def get_start_coords(self, ship_: ship.Ship):
 
         coords = input(f'{self.name}, enter the starting position for your {ship_.name} ship '
-                       f',which is {ship_.length} long, in the for row, column: ')
+                       f',which is {ship_.length} long, in the form row, column: ')
         try:
             row, col = coords.split(',')
         except ValueError:
@@ -86,9 +90,37 @@ class Player(object):
     def all_ships_sunk(self) -> bool:
         return all(ship_.health == 0 for ship_ in self.ships.values())
 
-    def get_move(self):
-        coords = input('Enter the location you want to fire at in the form row,col: ')
+    def get_move(self) -> move.Move:
+        while True:
+            coords = input('Enter the location you want to fire at in the form row, column: ')
+            try:
+                firing_location = move.Move.from_str(self, coords)
+            except ValueError as e:
+                print(e)
+                continue
+            return firing_location
 
+    def fire_at(self, row: int, col: int) -> None:
+        opponent = self.opponents[0]
+        if not opponent.board.coords_in_bounds(row, col):
+            raise FiringLocationError(f'{row}, {col} '
+                                      f'is not in bounds of our '
+                                      f'{opponent.board.num_rows} X {opponent.board.num_cols} board')
+        elif opponent.board.has_been_fired_at(row, col):
+            raise FiringLocationError(f'You have already fired at {row}, {col}')
+        else:
+            opponent.receive_fire_at(row, col)
+
+    def receive_fire_at(self, row: int, col: int) -> None:
+        location_fired_at = self.board.shoot(row, col)
+        if location_fired_at.contains_ship():
+            ship_hit = self.ships[location_fired_at.content]
+            ship_hit.damage()
+            print(f"You hit {self.name}'s {ship_hit}!")
+            if ship_hit.destroyed():
+                print(f"You destroyed {self.name}'s {ship_hit}")
+        else:
+            print('Miss')
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Player):
@@ -99,18 +131,21 @@ class Player(object):
     def __ne__(self, other: object) -> bool:
         return self != other
 
-    def display_scanning_boards(self):
+    def display_placement_board(self) -> None:
+        print(f"{self.name}'s Placement Board")
+        print(self.get_visible_representation_of_board())
+
+    def display_scanning_boards(self) -> None:
         print(f"{self.name}'s Scanning Board")
         for opponent in self.opponents:
             print(opponent.get_hidden_representation_of_board())
 
-        print(f"\n{self.name}'s Firing Board")
+    def display_firing_board(self) -> None:
+        print(f"\n{self.name}'s Board")
         print(self.get_visible_representation_of_board())
 
-    def display_firing_board(self):
-        pass
+    def get_hidden_representation_of_board(self) -> str:
+        return self.board.get_display(hidden=True)
 
-    def get_hidden_representation_of_board(self):
-        pass
-
-
+    def get_visible_representation_of_board(self) -> str:
+        return self.board.get_display(hidden=False)

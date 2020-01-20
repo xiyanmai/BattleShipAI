@@ -15,9 +15,11 @@ class Cell(object):
         else:
             return self.miss_marker
 
+    def shoot(self) -> None:
+        self.has_been_fired_at = True
+
     def contains_ship(self) -> bool:
         return self.content != self.empty_marker
 
     def __str__(self) -> str:
         return self.content
-

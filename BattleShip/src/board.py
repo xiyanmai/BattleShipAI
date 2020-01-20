@@ -1,5 +1,5 @@
 from typing import Set, List
-from . import ship_placement, orientation, game_config, cell
+from . import ship_placement, orientation, game_config, cell, move
 from .cell import Cell
 
 
@@ -28,15 +28,25 @@ class Board(object):
     def num_cols(self) -> int:
         return len(self.contents[0])
 
-    def in_bounds(self, row: int, col: int) -> bool:
+    def coords_in_bounds(self, row: int, col: int) -> bool:
         return 0 <= row < self.num_rows and 0 <= col < self.num_cols
+
+    def firing_location_in_bounds(self, firing_location: move.Move) -> bool:
+        return self.coords_in_bounds(firing_location.row, firing_location.col)
+
+    def has_been_fired_at(self, row: int, col: int) -> bool:
+        return self.contents[row][col].has_been_fired_at
+
+    def shoot(self, row: int, col: int) -> cell.Cell:
+        self.contents[row][col].shoot()
+        return self.contents[row][col]
 
     def place_ship(self, placement: ship_placement.ShipPlacement) -> None:
         direction = 'horizontally' if placement.orientation == orientation.Orientation.HORIZONTAL else 'vertically'
-        if not self.in_bounds(placement.row_start, placement.col_start):
+        if not self.coords_in_bounds(placement.row_start, placement.col_start):
             raise ValueError(f'Cannot {placement.ship.name} {direction} at {placement.row_start}, {placement.col_start}'
                              f' because it would be out of bounds.')
-        elif not self.in_bounds(placement.row_end, placement.col_end):
+        elif not self.coords_in_bounds(placement.row_end, placement.col_end):
             raise ValueError(f'Cannot {placement.ship.name} {direction} at {placement.row_start}, {placement.col_start}'
                              f' because it would end up out of bounds.')
 
@@ -54,12 +64,15 @@ class Board(object):
         overlapping_ships: Set[str] = set()
         for row in range(placement.row_start, placement.row_end + 1):
             for col in range(placement.col_start, placement.col_end + 1):
-                if self.contains_ship(row, col):
+                if self.coords_contains_ship(row, col):
                     overlapping_ships.add(self.contents[row][col].content)
         return overlapping_ships
 
-    def contains_ship(self, row: int, col: int) -> bool:
+    def coords_contains_ship(self, row: int, col: int) -> bool:
         return self.contents[row][col].contains_ship()
+
+    def firing_location_contains_ship(self, firing_location: move.Move) -> bool:
+        return self.coords_contains_ship(firing_location.row, firing_location.col)
 
     def get_display(self, hidden: bool = False) -> str:
         # the amount of whitespace between each element should be

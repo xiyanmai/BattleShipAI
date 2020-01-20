@@ -8,5 +8,11 @@ class Ship(object):
     def __str__(self) -> str:
         return self.name
 
+    def damage(self)->None:
+        self.health -= 1
+
+    def destroyed(self) -> bool:
+        return self.health == 0
+
     def __lt__(self, other:"Ship"):
         return self.name < other.name
