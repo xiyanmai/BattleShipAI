@@ -13,7 +13,7 @@ class Move(object):
     @classmethod
     def from_str(cls, maker: "player.Player", str_rep: str) -> "Move":
         try:
-            row, col = str_rep.split()
+            row, col = str_rep.split(',')
         except ValueError:
             raise ValueError(f'{str_rep} is not a valid location.\n'
                              f'Enter the firing location in the form row, column')

@@ -12,8 +12,8 @@ class Game(object):
         self.setup_players(num_players)
 
     def setup_players(self, num_players: int) -> None:
-        for player_num in range(num_players):
-            self.players.append(player.Player(self.game_config, self.players))
+        for player_num in range(1, num_players + 1):
+            self.players.append(player.Player(player_num, self.game_config, self.players))
 
     def play(self) -> None:
         active_player = self.players[0]

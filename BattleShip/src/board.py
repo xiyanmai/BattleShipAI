@@ -58,7 +58,7 @@ class Board(object):
         # actually add the ship
         for row in range(placement.row_start, placement.row_end + 1):
             for col in range(placement.col_start, placement.col_end + 1):
-                self.contents[row][col].content = placement.ship.name
+                self.contents[row][col].content = placement.ship.initial
 
     def get_overlapping_ships(self, placement: ship_placement.ShipPlacement) -> Set[str]:
         overlapping_ships: Set[str] = set()
@@ -78,7 +78,7 @@ class Board(object):
         # the amount of whitespace between each element should be
         # the number of characters that is in the largest dimension
         sep = ' ' * max((len(str(self.num_rows - 1)), len(str(self.num_cols - 1))))
-        rep = sep * 2 + sep.join((str(headder) for headder in range(self.num_cols))) + '\n'
+        rep = sep * 2 + sep.join((str(header) for header in range(self.num_cols))) + '\n'
         for row_num, row in enumerate(self.contents):
             rep += str(row_num) + sep + sep.join(cell_.representation(hidden) for cell_ in row) + '\n'
         return rep

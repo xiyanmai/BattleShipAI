@@ -14,7 +14,7 @@ class GameConfig(object):
             for ship_info in config_file:
                 ship_name, ship_len = ship_info.split()
                 ship_len = int(ship_len)
-                self.available_ships[ship_name] = ship.Ship(ship_name, ship_len)
+                self.available_ships[ship_name[0]] = ship.Ship(ship_name, ship_len)
 
     @property
     def num_rows(self) -> int:

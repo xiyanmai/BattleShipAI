@@ -13,7 +13,7 @@ class ShipPlacement(object):
             self.row_end = row_start
             self.col_end = col_start + ship_.length - 1
         elif orientation_ == orientation.Orientation.VERTICAL:
-            self.row_end = row_start + ship_.length + 1
+            self.row_end = row_start + ship_.length - 1
             self.col_end = col_start
         else:
             raise NotImplementedError(f'Placing ships {orientation_} is not supported yet.')

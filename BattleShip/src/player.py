@@ -8,10 +8,10 @@ class Player(object):
     opponents: List["Player"]
     ships: Dict[str, ship.Ship]
 
-    def __init__(self, config: game_config.GameConfig, other_players: List["Player"]) -> None:
+    def __init__(self, player_num: int, config: game_config.GameConfig, other_players: List["Player"]) -> None:
         super().__init__()
         self.name = 'No Name'
-        self.init_name(other_players)
+        self.init_name(player_num, other_players)
         self.board = board.Board(config)
         self.opponents = other_players[:]  # a copy of other players
         self.ships = dict(config.available_ships)
@@ -21,9 +21,9 @@ class Player(object):
         for opponent in other_players:
             opponent.add_opponent(self)
 
-    def init_name(self, other_players: List["Player"]) -> None:
+    def init_name(self, player_num: int, other_players: List["Player"]) -> None:
         while True:
-            self.name = input('Please enter your name: ').strip()
+            self.name = input(f'Player {player_num} please enter your name: ').strip()
             if self in other_players:
                 print(f'Someone is already using {self.name} for their name.\n'
                       f'Please choose another name.')
@@ -37,6 +37,7 @@ class Player(object):
         for ship_ in self.ships.values():
             self.display_placement_board()
             self.place_ship(ship_)
+        self.display_placement_board()
 
     def place_ship(self, ship_: ship.Ship) -> None:
         while True:
@@ -80,7 +81,7 @@ class Player(object):
                              f'It should be an integer between 0 and {self.board.num_rows - 1}')
 
         try:
-            row = int(row)
+            col = int(col)
         except ValueError:
             raise ValueError(f'{col} is not a valid value for column.\n'
                              f'It should be an integer between 0 and {self.board.num_cols - 1}')
@@ -92,7 +93,7 @@ class Player(object):
 
     def get_move(self) -> move.Move:
         while True:
-            coords = input('Enter the location you want to fire at in the form row, column: ')
+            coords = input(f'{self.name}, enter the location you want to fire at in the form row, column: ')
             try:
                 firing_location = move.Move.from_str(self, coords)
             except ValueError as e:
@@ -110,6 +111,8 @@ class Player(object):
             raise FiringLocationError(f'You have already fired at {row}, {col}')
         else:
             opponent.receive_fire_at(row, col)
+            self.display_scanning_boards()
+            self.display_firing_board()
 
     def receive_fire_at(self, row: int, col: int) -> None:
         location_fired_at = self.board.shoot(row, col)
@@ -133,12 +136,12 @@ class Player(object):
 
     def display_placement_board(self) -> None:
         print(f"{self.name}'s Placement Board")
-        print(self.get_visible_representation_of_board())
+        print(self.get_visible_representation_of_board(), end='')
 
     def display_scanning_boards(self) -> None:
         print(f"{self.name}'s Scanning Board")
         for opponent in self.opponents:
-            print(opponent.get_hidden_representation_of_board())
+            print(opponent.get_hidden_representation_of_board(), end='')
 
     def display_firing_board(self) -> None:
         print(f"\n{self.name}'s Board")
@@ -149,3 +152,7 @@ class Player(object):
 
     def get_visible_representation_of_board(self) -> str:
         return self.board.get_display(hidden=False)
+
+    def __str__(self) -> str:
+        return self.name
+
