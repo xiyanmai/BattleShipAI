@@ -1,5 +1,5 @@
 from typing import Dict, List
-
+import copy
 from . import game_config, board, ship, orientation, ship_placement, move
 from .firing_location_error import FiringLocationError
 
@@ -14,7 +14,7 @@ class Player(object):
         self.init_name(player_num, other_players)
         self.board = board.Board(config)
         self.opponents = other_players[:]  # a copy of other players
-        self.ships = dict(config.available_ships)
+        self.ships = copy.deepcopy(config.available_ships)
         self.place_ships()
 
         # make this player the opponent of all the other players
