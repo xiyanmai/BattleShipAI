@@ -44,7 +44,7 @@ class Board(object):
     def place_ship(self, placement: ship_placement.ShipPlacement) -> None:
         direction = 'horizontally' if placement.orientation == orientation.Orientation.HORIZONTAL else 'vertically'
         if not self.coords_in_bounds(placement.row_start, placement.col_start):
-            raise ValueError(f'Cannot pace {placement.ship.name} {direction} at {placement.row_start}, {placement.col_start}'
+            raise ValueError(f'Cannot place {placement.ship.name} {direction} at {placement.row_start}, {placement.col_start}'
                              f' because it would be out of bounds.')
         elif not self.coords_in_bounds(placement.row_end, placement.col_end):
             raise ValueError(f'Cannot place {placement.ship.name} {direction} at {placement.row_start}, {placement.col_start}'
