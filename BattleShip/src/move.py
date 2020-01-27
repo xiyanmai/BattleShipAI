@@ -24,7 +24,7 @@ class Move(object):
         try:
             col = int(col)
         except ValueError:
-            raise ValueError(f'Column should be an integer. {row} is NOT an integer.')
+            raise ValueError(f'Column should be an integer. {col} is NOT an integer.')
         return cls(maker, row, col)
 
     def make(self) -> None:
