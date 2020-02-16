@@ -42,7 +42,6 @@ class Player(object):
                     return None
             else:
                 print('not valid')
-                break
                 continue
 
 
@@ -54,7 +53,10 @@ class Player(object):
     def place_ships(self) -> None:
         for ship_ in self.ships.values():
             self.display_placement_board()
-            self.place_ship(ship_)
+            if self.name.startswith('Human'):
+                self.place_ship(ship_)
+            else:
+                self.Ai_place_ship(ship_)
         self.display_placement_board()
 
     def place_ship(self, ship_: ship.Ship) -> None:
