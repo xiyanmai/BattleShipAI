@@ -11,24 +11,42 @@ class Player(object):
     def __init__(self, player_num: int, config: game_config.GameConfig, other_players: List["Player"]) -> None:
         super().__init__()
         self.name = 'No Name'
+        self.types = ['Human', 'CheatingAi', 'SearchDestroyAi', 'RandomAi']
         self.init_name(player_num, other_players)
         self.board = board.Board(config)
         self.opponents = other_players[:]  # a copy of other players
         self.ships = copy.deepcopy(config.available_ships)
         self.place_ships()
 
+
+
         # make this player the opponent of all the other players
         for opponent in other_players:
             opponent.add_opponent(self)
 
     def init_name(self, player_num: int, other_players: List["Player"]) -> None:
+        #while True:
+         #   self.name = input(f'Player {player_num} please enter your name: ').strip()
+         #   if self in other_players:
+         #       print(f'Someone is already using {self.name} for their name.\n'
+         #             f'Please choose another name.')
+         #   else:
+         #       break
+         # Can delete
+
         while True:
-            self.name = input(f'Player {player_num} please enter your name: ').strip()
-            if self in other_players:
-                print(f'Someone is already using {self.name} for their name.\n'
-                      f'Please choose another name.')
+            self.name = input(f"Enter one of {self.types} for Player {player_num}'s type:").strip()
+            for type in self.types:
+                if type.lower().startswith(self.name.lower()):
+                    self.name = f'{type} {player_num}'
+                    return None
             else:
+                print('not valid')
                 break
+                continue
+
+
+
 
     def add_opponent(self, opponent: "Player") -> None:
         self.opponents.append(opponent)
