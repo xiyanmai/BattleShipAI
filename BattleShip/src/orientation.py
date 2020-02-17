@@ -1,4 +1,5 @@
 import enum
+import random
 
 
 class Orientation(enum.Enum):
@@ -14,3 +15,13 @@ class Orientation(enum.Enum):
             if ori.value.startswith(str_orientation):
                 return ori
         raise ValueError(f'{str_orientation} does not represent an Orientation')
+
+    @staticmethod
+    def random_orientation() -> "Orientation":
+
+        # Need help here, can not randomly choose from enum
+        ori_choice = random.choice([0, 1])
+        ori = Orientation[ori_choice]
+        return ori
+
+

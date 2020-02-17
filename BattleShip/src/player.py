@@ -2,6 +2,7 @@ from typing import Dict, List
 import copy
 from . import game_config, board, ship, orientation, ship_placement, move
 from .firing_location_error import FiringLocationError
+import random
 
 
 class Player(object):
@@ -44,9 +45,6 @@ class Player(object):
                 print('not valid')
                 continue
 
-
-
-
     def add_opponent(self, opponent: "Player") -> None:
         self.opponents.append(opponent)
 
@@ -69,6 +67,16 @@ class Player(object):
             else:
                 return
 
+    def Ai_place_ship(self, ship_: ship.Ship) -> None:
+        while True:
+            placement = self.get_Ai_ship_placement(ship_)
+            try:
+                self.board.place_ship(placement)
+            except ValueError as e:
+                print(e)
+            else:
+                return
+
     def get_ship_placement(self, ship_: ship.Ship):
         while True:
             try:
@@ -79,11 +87,24 @@ class Player(object):
             else:
                 return ship_placement.ShipPlacement(ship_, orientation_, start_row, start_col)
 
+    def get_Ai_ship_placement(self, ship_: ship.Ship):
+        while True:
+            try:
+                orientation_ = self.get_Ai_orientation(ship_)
+                start_row, start_col = self.get_Ai_start_coords(ship_)
+            except ValueError as e:
+                print(e)
+            else:
+                return ship_placement.ShipPlacement(ship_, orientation_, start_row, start_col)
+
     def get_orientation(self, ship_: ship.Ship) -> orientation.Orientation:
         orientation_ = input(
             f'{self.name} enter horizontal or vertical for the orientation of {ship_.name} '
             f'which is {ship_.length} long: ')
         return orientation.Orientation.from_string(orientation_)
+
+    def get_Ai_orientation(self, ship_: ship.Ship) -> orientation.Orientation:
+        return orientation.Orientation.random_orientation()
 
     def get_start_coords(self, ship_: ship.Ship):
 
@@ -106,6 +127,11 @@ class Player(object):
             raise ValueError(f'{col} is not a valid value for column.\n'
                              f'It should be an integer between 0 and {self.board.num_cols - 1}')
 
+        return row, col
+
+    def get_Ai_start_coords(self, ship_: ship.Ship):
+        row = random.randint(0, self.board.num_rows)
+        col = random.randint(0, self.board.num_cols)
         return row, col
 
     def all_ships_sunk(self) -> bool:
