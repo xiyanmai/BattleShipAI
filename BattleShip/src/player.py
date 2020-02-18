@@ -1,6 +1,6 @@
 from typing import Dict, List
 import copy
-from . import game_config, board, ship, orientation, ship_placement, move, HumanPlayer
+from . import game_config, board, ship, orientation, ship_placement, move, HumanPlayer, AIPlayer
 from .firing_location_error import FiringLocationError
 import random
 
@@ -143,9 +143,9 @@ class Player(object):
     def get_move(self) -> move.Move:
         if self.name.startswith('Human'):
             firing_location = HumanPlayer.HumanPlayer.get_move(self)
-            return firing_location
         else:
-            firing_location = AIPlayer
+            firing_location = AIPlayer.AIPlayer.get_move(self)
+        return firing_location
 
 
     def fire_at(self, row: int, col: int) -> None:
