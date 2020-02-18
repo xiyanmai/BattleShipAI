@@ -1,6 +1,6 @@
 from typing import Dict, List
 import copy
-from . import game_config, board, ship, orientation, ship_placement, move
+from . import game_config, board, ship, orientation, ship_placement, move, HumanPlayer
 from .firing_location_error import FiringLocationError
 import random
 
@@ -13,12 +13,12 @@ class Player(object):
         super().__init__()
         self.name = 'No Name'
         self.types = ['Human', 'CheatingAi', 'SearchDestroyAi', 'RandomAi']
+        self.types_for_display = ['Human', 'Cheating AI', 'SearchDestroy AI', 'Random AI']
         self.init_name(player_num, other_players)
         self.board = board.Board(config)
         self.opponents = other_players[:]  # a copy of other players
         self.ships = copy.deepcopy(config.available_ships)
         self.place_ships()
-
 
 
         # make this player the opponent of all the other players
@@ -37,8 +37,8 @@ class Player(object):
 
         while True:
             self.name = input(f"Enter one of {self.types} for Player {player_num}'s type:").strip()
-            for type in self.types:
-                if type.lower().startswith(self.name.lower()):
+            for type in self.types_for_display:
+                if type.replace(" ", "").lower().startswith(self.name.lower()):
                     self.name = f'{type} {player_num}'
                     return None
             else:
@@ -49,11 +49,14 @@ class Player(object):
         self.opponents.append(opponent)
 
     def place_ships(self) -> None:
-        for ship_ in self.ships.values():
-            self.display_placement_board()
-            if self.name.startswith('Human'):
+
+        if self.name.startswith('Human'):
+            for ship_ in self.ships.values():
+                self.display_placement_board()
                 self.place_ship(ship_)
-            else:
+        else:
+            for ship_ in self.ships.values():
+                self.display_placement_board()
                 self.Ai_place_ship(ship_)
         self.display_placement_board()
 
@@ -138,14 +141,12 @@ class Player(object):
         return all(ship_.health == 0 for ship_ in self.ships.values())
 
     def get_move(self) -> move.Move:
-        while True:
-            coords = input(f'{self.name}, enter the location you want to fire at in the form row, column: ')
-            try:
-                firing_location = move.Move.from_str(self, coords)
-            except ValueError as e:
-                print(e)
-                continue
+        if self.name.startswith('Human'):
+            firing_location = HumanPlayer.HumanPlayer.get_move(self)
             return firing_location
+        else:
+            firing_location = AIPlayer
+
 
     def fire_at(self, row: int, col: int) -> None:
         opponent = self.opponents[0]
