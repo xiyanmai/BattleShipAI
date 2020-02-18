@@ -20,8 +20,10 @@ class Orientation(enum.Enum):
     def random_orientation() -> "Orientation":
 
         # Need help here, can not randomly choose from enum
-        ori_choice = random.choice([0, 1])
-        ori = Orientation[ori_choice]
-        return ori
+        ori_choice = random.choice(['horizontal', 'vertical'])
+        for ori in Orientation:
+            if ori.value.startswith(ori_choice):
+                return ori
+
 
 

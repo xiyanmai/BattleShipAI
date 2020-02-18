@@ -71,7 +71,7 @@ class Player(object):
         while True:
             placement = self.get_Ai_ship_placement(ship_)
             try:
-                self.board.place_ship(placement)
+                self.board.Ai_place_ship(placement)
             except ValueError as e:
                 print(e)
             else:
@@ -130,8 +130,8 @@ class Player(object):
         return row, col
 
     def get_Ai_start_coords(self, ship_: ship.Ship):
-        row = random.randint(0, self.board.num_rows)
-        col = random.randint(0, self.board.num_cols)
+        row = random.randint(0, self.board.num_rows-1)
+        col = random.randint(0, self.board.num_cols-1)
         return row, col
 
     def all_ships_sunk(self) -> bool:
