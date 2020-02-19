@@ -28,5 +28,14 @@ class AIPlayer(object):
                 print(e)
             return firing_location
 
+        if maker.name.startswith('Search Destroy'):
+            r = random.randint(0, maker.opponents[0].board.num_rows - 1)
+            c = random.randint(0, maker.opponents[0].board.num_cols - 1)
+            coords = f'{r}, {c}'
+            try:
+                firing_location = move.Move.from_str(maker, coords)
+            except ValueError as e:
+                print(e)
+            return firing_location
 
 

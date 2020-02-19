@@ -13,7 +13,7 @@ class Player(object):
         super().__init__()
         self.name = 'No Name'
         self.types = ['Human', 'CheatingAi', 'SearchDestroyAi', 'RandomAi']
-        self.types_for_display = ['Human', 'Cheating AI', 'SearchDestroy AI', 'Random AI']
+        self.types_for_display = ['Human', 'Cheating AI', 'Search Destroy AI', 'Random AI']
         self.init_name(player_num, other_players)
         self.board = board.Board(config)
         self.opponents = other_players[:]  # a copy of other players
