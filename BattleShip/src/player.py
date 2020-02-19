@@ -57,7 +57,7 @@ class Player(object):
         else:
             for ship_ in self.ships.values():
                 self.display_placement_board()
-                self.Ai_place_ship(ship_)
+                self.ai_place_ship(ship_)
         self.display_placement_board()
 
     def place_ship(self, ship_: ship.Ship) -> None:
@@ -70,9 +70,9 @@ class Player(object):
             else:
                 return
 
-    def Ai_place_ship(self, ship_: ship.Ship) -> None:
+    def ai_place_ship(self, ship_: ship.Ship) -> None:
         while True:
-            placement = self.get_Ai_ship_placement(ship_)
+            placement = self.get_ai_ship_placement(ship_)
             try:
                 self.board.Ai_place_ship(placement)
             except ValueError as e:
@@ -90,11 +90,11 @@ class Player(object):
             else:
                 return ship_placement.ShipPlacement(ship_, orientation_, start_row, start_col)
 
-    def get_Ai_ship_placement(self, ship_: ship.Ship):
+    def get_ai_ship_placement(self, ship_: ship.Ship):
         while True:
             try:
-                orientation_ = self.get_Ai_orientation(ship_)
-                start_row, start_col = self.get_Ai_start_coords(ship_)
+                orientation_ = self.get_ai_orientation(ship_)
+                start_row, start_col = self.get_ai_start_coords(ship_)
             except ValueError as e:
                 print(e)
             else:
@@ -106,7 +106,7 @@ class Player(object):
             f'which is {ship_.length} long: ')
         return orientation.Orientation.from_string(orientation_)
 
-    def get_Ai_orientation(self, ship_: ship.Ship) -> orientation.Orientation:
+    def get_ai_orientation(self, ship_: ship.Ship) -> orientation.Orientation:
         return orientation.Orientation.random_orientation()
 
     def get_start_coords(self, ship_: ship.Ship):
@@ -132,9 +132,9 @@ class Player(object):
 
         return row, col
 
-    def get_Ai_start_coords(self, ship_: ship.Ship):
-        row = random.randint(0, self.board.num_rows-1)
-        col = random.randint(0, self.board.num_cols-1)
+    def get_ai_start_coords(self, ship_: ship.Ship):
+        row = random.randint(0, self.board.num_rows - 1)
+        col = random.randint(0, self.board.num_cols - 1)
         return row, col
 
     def all_ships_sunk(self) -> bool:
