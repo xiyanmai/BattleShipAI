@@ -19,6 +19,7 @@ class Player(object):
         self.opponents = other_players[:]  # a copy of other players
         self.ships = copy.deepcopy(config.available_ships)
         self.place_ships()
+        self.hit_coords = []
 
 
         # make this player the opponent of all the other players
@@ -167,10 +168,12 @@ class Player(object):
             ship_hit = self.ships[location_fired_at.content]
             ship_hit.damage()
             print(f"You hit {self.name}'s {ship_hit}!")
+            self.hit_coords.append([row, col, 0])
             if ship_hit.destroyed():
                 print(f"You destroyed {self.name}'s {ship_hit}")
         else:
             print('Miss')
+
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Player):
