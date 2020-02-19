@@ -60,7 +60,7 @@ class Board(object):
             for col in range(placement.col_start, placement.col_end + 1):
                 self.contents[row][col].content = placement.ship.initial
 
-    def Ai_place_ship(self, placement: ship_placement.ShipPlacement) -> None:
+    def ai_place_ship(self, placement: ship_placement.ShipPlacement) -> None:
         direction = 'horizontally' if placement.orientation == orientation.Orientation.HORIZONTAL else 'vertically'
         if not self.coords_in_bounds(placement.row_start, placement.col_start):
             raise ValueError
@@ -69,7 +69,7 @@ class Board(object):
 
         overlapping_ships = sorted(self.get_overlapping_ships(placement))
         if overlapping_ships:
-            return None
+            raise ValueError
 
         # actually add the ship
         for row in range(placement.row_start, placement.row_end + 1):

@@ -74,7 +74,7 @@ class Player(object):
         while True:
             placement = self.get_ai_ship_placement(ship_)
             try:
-                self.board.Ai_place_ship(placement)
+                self.board.ai_place_ship(placement)
             except ValueError as e:
                 print(e)
             else:
