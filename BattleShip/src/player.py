@@ -1,6 +1,6 @@
 from typing import Dict, List
 import copy
-from . import game_config, board, ship, orientation, ship_placement, move, HumanPlayer, AIPlayer
+from . import game, game_config, board, ship, orientation, ship_placement, move, HumanPlayer, AIPlayer
 from .firing_location_error import FiringLocationError
 import random
 
@@ -9,9 +9,10 @@ class Player(object):
     opponents: List["Player"]
     ships: Dict[str, ship.Ship]
 
-    def __init__(self, player_num: int, config: game_config.GameConfig, other_players: List["Player"], seed: int) -> None:
+    def __init__(self, ran: "random.Random", player_num: int, config: game_config.GameConfig, other_players: List["Player"]) -> None:
         super().__init__()
-        self.seed = seed
+        self.ran = random
+        self.ran.seed(75)
         self.name = 'No Name'
         self.types = ['Human', 'CheatingAi', 'SearchDestroyAi', 'RandomAi']
         self.types_for_display = ['Human', 'Cheating Ai', 'Search Destroy Ai', 'Random Ai']
@@ -38,7 +39,7 @@ class Player(object):
          # Can delete
 
         while True:
-            self.name = input(f"Enter one of {self.types} for Player {player_num}'s type:").strip()
+            self.name = input(f"Enter one of {self.types} for Player {player_num}'s type: ").strip()
             for type in self.types_for_display:
                 if type.replace(" ", "").lower().startswith(self.name.lower()):
                     self.name = f'{type} {player_num}'
@@ -96,7 +97,7 @@ class Player(object):
         while True:
             try:
                 orientation_ = self.get_ai_orientation(ship_)
-                start_row, start_col = self.get_ai_start_coords(ship_)
+                start_row, start_col = self.get_ai_start_coords(orientation_, ship_)
             except ValueError:
                 pass
             else:
@@ -109,7 +110,7 @@ class Player(object):
         return orientation.Orientation.from_string(orientation_)
 
     def get_ai_orientation(self, ship_: ship.Ship) -> orientation.Orientation:
-        return orientation.Orientation.random_orientation()
+        return orientation.Orientation.random_orientation(self)
 
     def get_start_coords(self, ship_: ship.Ship):
 
@@ -134,10 +135,15 @@ class Player(object):
 
         return row, col
 
-    def get_ai_start_coords(self, ship_: ship.Ship, ):
-        row = random.randint(0, self.board.num_rows - 1)
-        col = random.randint(0, self.board.num_cols - 1)
-        return row, col
+    def get_ai_start_coords(self, orientation, ship_: ship.Ship):
+        if orientation.value == 'horizontal':
+            row = self.ran.randint(0, self.board.num_rows - 1)
+            col = self.ran.randint(0, self.board.num_cols - ship_.length)
+            return row, col
+        elif orientation.value == 'vertical':
+            row = self.ran.randint(0, self.board.num_rows - ship_.length)
+            col = self.ran.randint(0, self.board.num_cols - 1)
+            return row, col
 
     def all_ships_sunk(self) -> bool:
         return all(ship_.health == 0 for ship_ in self.ships.values())

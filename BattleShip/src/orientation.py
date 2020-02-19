@@ -1,5 +1,5 @@
 import enum
-import random
+from . import player
 
 
 class Orientation(enum.Enum):
@@ -17,10 +17,9 @@ class Orientation(enum.Enum):
         raise ValueError(f'{str_orientation} does not represent an Orientation')
 
     @staticmethod
-    def random_orientation() -> "Orientation":
+    def random_orientation(maker: "player.Player") -> "Orientation":
 
-        # Need help here, can not randomly choose from enum
-        ori_choice = random.choice(['horizontal', 'vertical'])
+        ori_choice = maker.ran.choice(['horizontal', 'vertical'])
         for ori in Orientation:
             if ori.value.startswith(ori_choice):
                 return ori

@@ -1,5 +1,5 @@
 from . import move, player
-import random
+
 
 class AIPlayer(object):
     @classmethod
@@ -19,9 +19,8 @@ class AIPlayer(object):
                 r += 1
 
         if maker.name.startswith('Random'):
-
-            r = random.randint(0, maker.opponents[0].board.num_rows - 1)
-            c = random.randint(0, maker.opponents[0].board.num_cols - 1)
+            r = maker.ran.randint(0, maker.opponents[0].board.num_rows - 1)
+            c = maker.ran.randint(0, maker.opponents[0].board.num_cols - 1)
             coords = f'{r}, {c}'
             try:
                 firing_location = move.Move.from_str(maker, coords)
@@ -30,11 +29,10 @@ class AIPlayer(object):
             return firing_location
 
         if maker.name.startswith('Search Destroy'):
-
             while True:
                 if not maker.opponents[0].hit_coords:
-                    r = random.randint(0, maker.opponents[0].board.num_rows - 1)
-                    c = random.randint(0, maker.opponents[0].board.num_cols - 1)
+                    r = maker.ran.randint(0, maker.opponents[0].board.num_rows - 1)
+                    c = maker.ran.randint(0, maker.opponents[0].board.num_cols - 1)
 
                 else:
                     while True:
