@@ -6,6 +6,7 @@ class AIPlayer(object):
     @classmethod
     def get_move(cls, maker: "player.Player"):
 
+        global research
         if maker.name.startswith('Cheating'):
             r = 0
             for row in maker.opponents[0].board.contents:
@@ -59,18 +60,20 @@ class AIPlayer(object):
                                 maker.opponents[0].hit_coords[0][2] += 1
                                 continue
                             except IndexError:
-                                pass
+                                r = None
+                                c = None
+                                break
                         else:
                             break
-
                     try:
                         maker.opponents[0].hit_coords[0][2] += 1
                     except IndexError:
                         pass
-
                 coords = f'{r}, {c}'
                 try:
                     firing_location = move.Move.from_str(maker, coords)
                 except ValueError as e:
                     print(e)
+
+
                 return firing_location

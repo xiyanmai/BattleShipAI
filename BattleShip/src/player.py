@@ -156,7 +156,10 @@ class Player(object):
                                       f'is not in bounds of our '
                                       f'{opponent.board.num_rows} X {opponent.board.num_cols} board.')
         elif opponent.board.has_been_fired_at(row, col):
-            raise FiringLocationError(f'You have already fired at {row}, {col}.')
+            if self.name.startswith('Human'):
+                raise FiringLocationError(f'You have already fired at {row}, {col}.')
+            else:
+                raise FiringLocationError()
         else:
             opponent.receive_fire_at(row, col)
             self.display_scanning_boards()
