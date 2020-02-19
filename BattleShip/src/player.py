@@ -9,11 +9,12 @@ class Player(object):
     opponents: List["Player"]
     ships: Dict[str, ship.Ship]
 
-    def __init__(self, player_num: int, config: game_config.GameConfig, other_players: List["Player"]) -> None:
+    def __init__(self, player_num: int, config: game_config.GameConfig, other_players: List["Player"], seed: int) -> None:
         super().__init__()
+        self.seed = seed
         self.name = 'No Name'
         self.types = ['Human', 'CheatingAi', 'SearchDestroyAi', 'RandomAi']
-        self.types_for_display = ['Human', 'Cheating AI', 'Search Destroy AI', 'Random AI']
+        self.types_for_display = ['Human', 'Cheating Ai', 'Search Destroy Ai', 'Random Ai']
         self.init_name(player_num, other_players)
         self.board = board.Board(config)
         self.opponents = other_players[:]  # a copy of other players
@@ -76,8 +77,8 @@ class Player(object):
             placement = self.get_ai_ship_placement(ship_)
             try:
                 self.board.ai_place_ship(placement)
-            except ValueError as e:
-                print(e)
+            except ValueError:
+                pass
             else:
                 return
 
@@ -96,8 +97,8 @@ class Player(object):
             try:
                 orientation_ = self.get_ai_orientation(ship_)
                 start_row, start_col = self.get_ai_start_coords(ship_)
-            except ValueError as e:
-                print(e)
+            except ValueError:
+                pass
             else:
                 return ship_placement.ShipPlacement(ship_, orientation_, start_row, start_col)
 
@@ -133,7 +134,7 @@ class Player(object):
 
         return row, col
 
-    def get_ai_start_coords(self, ship_: ship.Ship):
+    def get_ai_start_coords(self, ship_: ship.Ship, ):
         row = random.randint(0, self.board.num_rows - 1)
         col = random.randint(0, self.board.num_cols - 1)
         return row, col

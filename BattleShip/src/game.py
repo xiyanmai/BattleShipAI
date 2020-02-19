@@ -1,11 +1,13 @@
 import itertools
 from . import game_config, player
-
+import random
 
 class Game(object):
 
-    def __init__(self, game_config_file: str, num_players: int = 2) -> None:
+    def __init__(self, game_config_file: str, ran_seed: str = '0', num_players: int = 2) -> None:
         super().__init__()
+        self.seed = int(ran_seed)
+        random.seed(self.seed)
         self.game_config = game_config.GameConfig(game_config_file)
         self.players = []
         self.player_turn = 0
@@ -13,7 +15,7 @@ class Game(object):
 
     def setup_players(self, num_players: int) -> None:
         for player_num in range(1, num_players + 1):
-            self.players.append(player.Player(player_num, self.game_config, self.players))
+            self.players.append(player.Player(player_num, self.game_config, self.players, self.seed))
 
     def play(self) -> None:
         active_player = self.players[0]

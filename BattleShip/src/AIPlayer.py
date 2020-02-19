@@ -2,11 +2,9 @@ from . import move, player
 import random
 
 class AIPlayer(object):
-    memory = None
     @classmethod
     def get_move(cls, maker: "player.Player"):
 
-        global research
         if maker.name.startswith('Cheating'):
             r = 0
             for row in maker.opponents[0].board.contents:
@@ -15,22 +13,24 @@ class AIPlayer(object):
                         coords = f'{r},{c}'
                         try:
                             firing_location = move.Move.from_str(maker, coords)
-                        except ValueError as e:
-                            print(e)
+                        except ValueError:
+                            pass
                         return firing_location
                 r += 1
 
         if maker.name.startswith('Random'):
+
             r = random.randint(0, maker.opponents[0].board.num_rows - 1)
             c = random.randint(0, maker.opponents[0].board.num_cols - 1)
             coords = f'{r}, {c}'
             try:
                 firing_location = move.Move.from_str(maker, coords)
-            except ValueError as e:
-                print(e)
+            except ValueError:
+                pass
             return firing_location
 
         if maker.name.startswith('Search Destroy'):
+
             while True:
                 if not maker.opponents[0].hit_coords:
                     r = random.randint(0, maker.opponents[0].board.num_rows - 1)
@@ -72,7 +72,7 @@ class AIPlayer(object):
                 coords = f'{r}, {c}'
                 try:
                     firing_location = move.Move.from_str(maker, coords)
-                except ValueError as e:
-                    print(e)
+                    return firing_location
+                except ValueError:
+                    continue
 
-                return firing_location
