@@ -75,5 +75,4 @@ class AIPlayer(object):
                 except ValueError as e:
                     print(e)
 
-
                 return firing_location
