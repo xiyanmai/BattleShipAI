@@ -9,10 +9,8 @@ class Player(object):
     opponents: List["Player"]
     ships: Dict[str, ship.Ship]
 
-    def __init__(self, ran: "random.Random", player_num: int, config: game_config.GameConfig, other_players: List["Player"]) -> None:
+    def __init__(self, player_num: int, config: game_config.GameConfig, other_players: List["Player"]) -> None:
         super().__init__()
-        self.ran = random
-        self.ran.seed(75)
         self.name = 'No Name'
         self.types = ['Human', 'CheatingAi', 'SearchDestroyAi', 'RandomAi']
         self.types_for_display = ['Human', 'Cheating Ai', 'Search Destroy Ai', 'Random Ai']
@@ -110,7 +108,7 @@ class Player(object):
         return orientation.Orientation.from_string(orientation_)
 
     def get_ai_orientation(self, ship_: ship.Ship) -> orientation.Orientation:
-        return orientation.Orientation.random_orientation(self)
+        return orientation.Orientation.random_orientation()
 
     def get_start_coords(self, ship_: ship.Ship):
 
@@ -137,12 +135,12 @@ class Player(object):
 
     def get_ai_start_coords(self, orientation, ship_: ship.Ship):
         if orientation.value == 'horizontal':
-            row = self.ran.randint(0, self.board.num_rows - 1)
-            col = self.ran.randint(0, self.board.num_cols - ship_.length)
+            row = random.randint(0, self.board.num_rows - 1)
+            col = random.randint(0, self.board.num_cols - ship_.length)
             return row, col
         elif orientation.value == 'vertical':
-            row = self.ran.randint(0, self.board.num_rows - ship_.length)
-            col = self.ran.randint(0, self.board.num_cols - 1)
+            row = random.randint(0, self.board.num_rows - ship_.length)
+            col = random.randint(0, self.board.num_cols - 1)
             return row, col
 
     def all_ships_sunk(self) -> bool:

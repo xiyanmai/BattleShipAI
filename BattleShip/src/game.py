@@ -16,8 +16,7 @@ class Game(object):
 
     def setup_players(self, num_players: int) -> None:
         for player_num in range(1, num_players + 1):
-            self.players.append(player.Player(self.ran, player_num, self.game_config, self.players))
-            self.ran = self.players[player_num-1].ran
+            self.players.append(player.Player(player_num, self.game_config, self.players))
 
     def play(self) -> None:
         active_player = self.players[0]
@@ -31,7 +30,6 @@ class Game(object):
         self.display_gamestate(cur_player)
         while True:
             move = cur_player.get_move()
-            self.ran = cur_player.ran
             move.make()
             if move.ends_turn():
                 break
