@@ -33,6 +33,8 @@ class AIPlayer(object):
             try:
                 r, c = maker.opponents[0].destroy[0]
                 del maker.opponents[0].destroy[0]
+                if (r, c) in maker.possible_locations:
+                    maker.possible_locations.remove((r, c))
 
             except IndexError:
                 r, c = (random.choice(maker.possible_locations))
