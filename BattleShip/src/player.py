@@ -12,15 +12,16 @@ class Player(object):
     def __init__(self, player_num: int, config: game_config.GameConfig, other_players: List["Player"]) -> None:
         super().__init__()
         self.name = 'No Name'
+        self.type = 'No Type'
         self.types = ['Human', 'CheatingAi', 'SearchDestroyAi', 'RandomAi']
-        self.types_for_display = ['Human', 'Cheating Ai', 'Search Destroy Ai', 'Random Ai']
+        self.types_for_display = ['Human', 'Cheating Ai', 'Search Destroy AI', 'Random Ai']
         self.init_name(player_num, other_players)
         self.board = board.Board(config)
         self.opponents = other_players[:]  # a copy of other players
         self.ships = copy.deepcopy(config.available_ships)
         self.place_ships()
-        self.hit_coords = []
-
+        self.destroy = []
+        self.possible_locations = [(row, col) for row in range(self.board.num_rows) for col in range(self.board.num_cols)]
 
         # make this player the opponent of all the other players
         for opponent in other_players:
@@ -41,17 +42,23 @@ class Player(object):
             for type in self.types_for_display:
                 if type.replace(" ", "").lower().startswith(self.name.lower()):
                     self.name = f'{type} {player_num}'
+                    self.type = f'{type}'
+                    if self.name.startswith('Human'):
+                        self.type = 'Human'
+                        self.name = input(f'Player {player_num} please enter your name: ').strip()
                     return None
             else:
                 print('not valid')
                 continue
+
+
 
     def add_opponent(self, opponent: "Player") -> None:
         self.opponents.append(opponent)
 
     def place_ships(self) -> None:
 
-        if self.name.startswith('Human'):
+        if self.type.startswith('Human'):
             for ship_ in self.ships.values():
                 self.display_placement_board()
                 self.place_ship(ship_)
@@ -59,6 +66,7 @@ class Player(object):
             for ship_ in self.ships.values():
                 self.display_placement_board()
                 self.ai_place_ship(ship_)
+
         self.display_placement_board()
 
     def place_ship(self, ship_: ship.Ship) -> None:
@@ -147,7 +155,7 @@ class Player(object):
         return all(ship_.health == 0 for ship_ in self.ships.values())
 
     def get_move(self) -> move.Move:
-        if self.name.startswith('Human'):
+        if self.type.startswith('Human'):
             firing_location = HumanPlayer.HumanPlayer.get_move(self)
         else:
             firing_location = AIPlayer.AIPlayer.get_move(self)
@@ -161,7 +169,7 @@ class Player(object):
                                       f'is not in bounds of our '
                                       f'{opponent.board.num_rows} X {opponent.board.num_cols} board.')
         elif opponent.board.has_been_fired_at(row, col):
-            if self.name.startswith('Human'):
+            if self.type.startswith('Human'):
                 raise FiringLocationError(f'You have already fired at {row}, {col}.')
             else:
                 raise FiringLocationError()
@@ -176,7 +184,8 @@ class Player(object):
             ship_hit = self.ships[location_fired_at.content]
             ship_hit.damage()
             print(f"You hit {self.name}'s {ship_hit}!")
-            self.hit_coords.append([row, col, 0])
+            if self.opponents[0].type.startswith('Search Destroy'):
+                self.destroy.extend(((row, col-1), (row-1, col), (row, col+1), (row+1, col)))
             if ship_hit.destroyed():
                 print(f"You destroyed {self.name}'s {ship_hit}")
         else:

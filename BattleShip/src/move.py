@@ -31,7 +31,7 @@ class Move(object):
         try:
             self.maker.fire_at(self.row, self.col)
         except FiringLocationError as e:
-            if self.maker.name.startswith('Human'):
+            if self.maker.type.startswith('Human'):
                 print(e)
             else:
                 pass
